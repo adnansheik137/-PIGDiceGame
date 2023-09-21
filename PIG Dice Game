@@ -1,0 +1,158 @@
+// Pig.cpp
+// Adnan Sheik, CISP 400
+// 09/04/2022
+
+#include <cmath>
+#include <iomanip>
+#include <iostream>
+#include <string>
+using namespace std;
+
+// Specification A1 - D6() function
+int rollFunct();
+
+void duedate();
+
+// Specification A2 - RandomNumber() function
+int chosenNumber(int lo, int hi);
+
+int main() {
+
+  int userInput;
+  int userDieout;
+  int compInput;
+  int compDieout;
+  int compDieroll;
+  int totalPointsUser = 0;
+  int totalPointsComp = 0;
+
+  int valid = 0;
+
+  // Specification B3 - Hi Score on Heap
+  int *highestPoints = new int(100);
+
+  string userFirst;
+  string userLast;
+  string userName;
+  duedate();
+  // Specification C2 - Student Name
+  cout << "Your chosen number of the day is " << chosenNumber(1, 100)
+       << endl;                                    // print out chosen  number
+  cout << "Please enter your first name:" << endl; // Prompt user for first name
+  cin >> userFirst;
+  cout << "Please enter your last name:" << endl; // prompt user for last name
+  cin >> userLast;
+
+  userName = userFirst + " " + userLast; // combines the name for future use
+
+  cout << "Welcome to the pig dice game, " << userName << "!"
+       << endl; // welcome greeting with player name
+  do {
+    // Specification C3 - Numeric Menu
+    cout << "Please select your choice: " << endl;
+    cout << "1. Roll " << endl << "2. Hold" << endl << "3. Quit" << endl;
+    cin >> userInput;
+    // Specification C4 - Bulletproof Menu
+    while ((userInput != 1) && (userInput != 2) &&
+           (userInput !=
+            3)) // if statement to captures only valid attempts at the menu
+    {
+      cout << "Invalid choice , please select a valid choice." << endl;
+      cin >> userInput; // directly inputs into useroption integer
+    }
+    if (userInput == 3) { // ends program, doesnt loop back
+      valid = 1; // changes do while loop to become false and ending loop
+      cout << "You have chosen to end the program." << endl;
+    }
+    switch (userInput) // userinput leads into case switch
+    {
+    case 1: {
+      if ((totalPointsUser < 100) && (totalPointsComp < 100)) {
+        cout << "You chose to roll the dice:" << endl;
+        // Specification A1 - D6() function
+        userDieout = rollFunct(); // calling AI roll die and leading it into
+                                  // userdieoutput
+        compDieout =
+            rollFunct(); // calling AI roll and leading it into compDieoutput
+        cout << "You rolled a " << userDieout << "." << endl; //prints our roll for user
+        if (userDieout == 1) { //skips the point if 1 is rolled
+          cout << "No points were awarded since you rolled a 1." << endl;
+        } else {
+          cout << "The number you rolled has been added to your score!" << endl;
+        }
+        if ((compDieout == 1) || (compDieout == 2) || (compDieout == 3)) {
+          cout << "The AI has selected to hold." << endl;
+        }
+        if ((compDieout == 4) || (compDieout == 5) || (compDieout == 6)) {
+          cout << "The AI has chosen to roll." << endl;
+          compDieroll = rollFunct(); //runs function into new int to hold the "actual roll" and not selection
+          totalPointsComp = compDieroll + totalPointsComp; //calculates total points for comp
+          cout << "The AI rolled a " << compDieroll << "." << endl; 
+        }
+      }
+      break; // end of case #1/ option to "roll"
+    case 2:
+      cout << "You have selected to hold this turn. " << endl; 
+
+      if ((compDieout == 1) || (compDieout == 2) || (compDieout == 3)) {
+        cout << "The AI has selected to hold." << endl;
+      }
+      if ((compDieout == 4) || (compDieout == 5) || (compDieout == 6)) {
+        cout << "The AI has chosen to roll." << endl;
+        compDieroll = rollFunct(); //computer only rolls if passes first if statement 
+        totalPointsComp = compDieroll + totalPointsComp; //computes total roll die for comp
+        cout << "The AI rolled a " << compDieroll << "." << endl;
+      }
+      break;
+    }
+    }
+    // Specification B1 - Display Turn Stats
+    totalPointsUser = userDieout + totalPointsUser; //comps user points in total for every turn
+    cout << userName << " Total Points : " << totalPointsUser << endl; //prints after every turn
+    cout << "AI's Total Points : " << totalPointsComp << endl;
+
+    if (totalPointsUser >= 100) { //if statement for when user finishes the game 
+      valid = 1;
+      cout << "Congradualations! You won the game!" << endl;
+      cout << "Your total points: " << totalPointsUser << endl;
+      if (totalPointsUser > *highestPoints) { 
+        *highestPoints = totalPointsUser; //sets heap score to totalpoints if new high score is met
+        // Specification B4 – Display High Score
+        cout << "Your new highest points: " << *highestPoints; //prints the highest points in game
+      }
+      delete highestPoints;
+    }
+  } while (valid == 0);
+} // main closed
+
+void duedate()
+// Specification B2 - Display Due Date
+{
+  cout << "This assignment is due on September 4th, 2022. But here I am "
+          "turning it in late"
+       << endl;
+}
+
+// Specification A1 - D6() function
+int rollFunct() {
+// Specification C1 - Fixed Seed
+  unsigned int seed = 3;
+  int dice = rand() % 6 + 1;
+  return dice;
+}
+// Specification A3 - Protect RandomNumber() input
+int chosenNumber(int lo, int hi) {
+  unsigned int seed = 3;
+  int chosen;
+  if ((hi > lo) && (lo >= 1) && (hi <= 100)) {
+    chosen = rand() % hi + lo + 1;
+  } else if ((hi < lo) || (lo < 1) || (hi > 100)) {
+    chosen = -1;
+  }
+
+// Specification A4 - Protect RandomNumber() output
+  if (chosen > 100) {
+    chosen = -2;
+  }
+  return chosen;
+}
